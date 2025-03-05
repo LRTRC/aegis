@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Aegis - Accueil{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-center mb-4">
+            <h1>Bienvenue sur Aegis</h1>
+            <p class="lead">Plateforme de gestion d'événements d'insertion professionnelle</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Vous êtes un demandeur d'emploi ?</h5>
+                    <p class="card-text">Découvrez et inscrivez-vous aux événements qui correspondent à votre projet professionnel.</p>
+                    <a href="{{ path('app_register_participant') }}" class="btn btn-primary">S'inscrire comme participant</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Vous êtes un professionnel ?</h5>
+                    <p class="card-text">Créez et gérez vos événements d'insertion professionnelle.</p>
+                    <a href="{{ path('app_register_professional') }}" class="btn btn-secondary">S'inscrire comme professionnel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

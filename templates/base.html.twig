@@ -1,17 +1,86 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<!doctype html>
+<html lang="fr" data-bs-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Aegis - Plateforme d'événements d'insertion{% endblock %}</title>
+    <meta name="description" content="Plateforme de gestion d'événements d'insertion professionnelle">
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+
+<header data-bs-theme="dark">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{path('app_home')}}">Aegis</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{path('app_home')}}">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Événements</a>
+                    </li>
+                    {% if is_granted('ROLE_PROFESSIONAL') %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Mes événements</a>
+                        </li>
+                    {% endif %}
+                    {% if is_granted('ROLE_PARTICIPANT') %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Mes inscriptions</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <div class="user-menu">
+                    {% if app.user %}
+                        <a href="{{ path('app_account') }}" class="me-3">
+                            <i data-feather="user"></i> 
+                            {{ app.user.firstname }}
+                        </a>
+                        <a href="{{ path('app_logout') }}" class="text-danger">
+                            <i data-feather="log-out"></i>
+                        </a>
+                    {% else %}
+                        <a href="{{path('app_login')}}" class="me-3">
+                            <i data-feather="log-in"></i> Connexion
+                        </a>
+                        <a href="{{path('app_register')}}" class="btn btn-outline-light btn-sm">
+                            Inscription
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="container mt-5 pt-5">
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {% block body %}{% endblock %}
+</main>
+
+<footer class="container mt-5">
+    <hr>
+    <p class="text-center">&copy; 2024 Aegis</p>
+</footer>
+
+<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+<script>
+    feather.replace();
+</script>
+</body>
 </html>

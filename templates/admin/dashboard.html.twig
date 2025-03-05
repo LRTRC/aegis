@@ -1,0 +1,250 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block head_javascript %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+{% endblock %}
+
+{% block head_stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c4c7c;    /* Bleu Sagesse */
+            --success: #48bb78;    /* Vert Success */
+            --warning: #ecc94b;    /* Avertissement */
+            --info: #4299e1;       /* Information */
+            --background: #f6f8fa; /* Gris Moderne */
+            --text: #4a5568;      /* Acier Protection */
+        }
+
+        .content-wrapper {
+            background-color: var(--background);
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .stat-card {
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s ease-in-out;
+            margin-bottom: 20px;
+            background-color: white;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stat-title {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin: 0;
+        }
+
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding: 1rem 1.5rem;
+        }
+
+        .card-header h5 {
+            font-family: 'Merriweather', serif;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 1rem 0;
+        }
+
+        .list-group-item:not(:last-child) {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .container-fluid {
+            max-width: 100%;
+            padding: 0 20px;
+        }
+
+        .row {
+            margin: 0 -10px;
+        }
+
+        .col-md-3, .col-md-6 {
+            padding: 0 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        {# Statistiques en cards #}
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-title text-primary">Participants</div>
+                    <div class="stat-number" style="color: var(--primary)">{{ stats.participants }}</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-title" style="color: var(--success)">Professionnels</div>
+                    <div class="stat-number" style="color: var(--success)">{{ stats.professionals }}</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-title" style="color: var(--info)">Événements</div>
+                    <div class="stat-number" style="color: var(--info)">{{ stats.events }}</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-title" style="color: var(--warning)">Sessions</div>
+                    <div class="stat-number" style="color: var(--warning)">{{ stats.sessions }}</div>
+                </div>
+            </div>
+        </div>
+
+        {# Graphiques #}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Événements par type</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="eventTypeChart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Sessions par mois</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="sessionChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Derniers événements et sessions #}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Derniers événements</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if latest_events is empty %}
+                            <p class="text-muted">Aucun événement</p>
+                        {% else %}
+                            {% for event in latest_events %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0">{{ event.titre }}</h6>
+                                            <small class="text-muted">{{ event.typeLabel }}</small>
+                                        </div>
+                                        <span class="badge bg-{{ event.status.value == 'published' ? 'success' : 'secondary' }}">
+                                            {{ event.statusLabel }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Dernières sessions</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if latest_sessions is empty %}
+                            <p class="text-muted">Aucune session</p>
+                        {% else %}
+                            {% for session in latest_sessions %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0">{{ session.event.titre }}</h6>
+                                            <small class="text-muted">{{ session.dateDebut ? session.dateDebut|date('d/m/Y H:i') : 'Date non définie' }}</small>
+                                        </div>
+                                        <span class="badge bg-{{ session.status.value == 'published' ? 'success' : 'secondary' }}">
+                                            {{ session.statusLabel }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var eventTypeOptions = {
+                series: {{ event_stats|json_encode|raw }},
+                chart: {
+                    type: 'pie',
+                    height: 350
+                },
+                labels: {{ event_labels|json_encode|raw }},
+                colors: ['#2c4c7c', '#7c8f5c', '#4299e1', '#ecc94b'],
+                legend: {
+                    position: 'bottom'
+                }
+            };
+            new ApexCharts(document.querySelector("#eventTypeChart"), eventTypeOptions).render();
+
+            var sessionOptions = {
+                series: [{
+                    name: 'Sessions',
+                    data: {{ session_stats|json_encode|raw }}
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 350
+                },
+                plotOptions: {
+                    bar: {
+                        borderRadius: 4
+                    }
+                },
+                colors: ['#2c4c7c'],
+                xaxis: {
+                    categories: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc']
+                }
+            };
+            new ApexCharts(document.querySelector("#sessionChart"), sessionOptions).render();
+        });
+    </script>
+{% endblock %}

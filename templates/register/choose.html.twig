@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container my-5 text-center">
+    <h1>Choisissez votre type d'inscription</h1>
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Inscription en tant que Participant</h4>
+                    <p class="card-text">Vous souhaitez participer aux événements proposés.</p>
+                    <a href="{{ path('app_register_participant') }}" class="btn btn-primary">S'inscrire</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Inscription en tant que Professionnel</h4>
+                    <p class="card-text">Vous souhaitez créer et gérer des événements.</p>
+                    <a href="{{ path('app_register_professional') }}" class="btn btn-primary">S'inscrire</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
